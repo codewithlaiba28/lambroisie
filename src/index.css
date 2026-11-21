@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: 'Bodoni Moda', serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #220d0e;
+    color: #ffdada;
+    font-family: var(--font-body);
+  }
+
+  body {
+    overscroll-behavior: none;
+  }
+
+  a, button, [role="button"], .cursor-pointer {
+    cursor: pointer !important;
+  }
+}
+
+/* Single source of truth font utilities */
+.font-display,
+.font-serif,
+.font-headline-lg,
+.font-headline-md,
+.font-headline-sm,
+.font-display-hero,
+.font-display-hero-mobile,
+.font-headline-lg-mobile,
+.font-title-editorial {
+  font-family: var(--font-display) !important;
+}
+
+.font-body,
+.font-sans,
+.font-body-lg,
+.font-body-md,
+.font-body-sm,
+.font-label-caps,
+.font-label-caps-sm {
+  font-family: var(--font-body) !important;
+}
+
+/* 3D Review Wall Perspective */
+.perspective-1200 {
+  perspective: 1200px;
+  perspective-origin: center center;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+/* Adaptive Navbar Classes */
+.nav--on-dark {
+  background-color: rgba(42, 10, 12, 0.55) !important;
+  border-bottom: 1px solid rgba(255, 218, 218, 0.12) !important;
+  color: #f3ebdd !important;
+}
+
+.nav--on-light {
+  background-color: rgba(243, 235, 221, 0.75) !important;
+  border-bottom: 1px solid rgba(42, 10, 12, 0.15) !important;
+  color: #2a0a0c !important;
+  box-shadow: 0 4px 20px rgba(42, 10, 12, 0.08) !important;
+}
+
+/* Infinite Marquee Animations for 3D Review Wall */
+@keyframes marqueeUp {
+  0% { transform: translateY(0%); }
+  100% { transform: translateY(-50%); }
+}
+
+@keyframes marqueeDown {
+  0% { transform: translateY(-50%); }
+  100% { transform: translateY(0%); }
+}
+
+.animate-marquee-up-40 {
+  animation: marqueeUp 40s linear infinite;
+}
+
+.animate-marquee-down-55 {
+  animation: marqueeDown 55s linear infinite;
+}
+
+.animate-marquee-up-48 {
+  animation: marqueeUp 48s linear infinite;
+}
+
+/* Smooth transition for magnetic buttons */
+.magnetic-btn {
+  will-change: transform;
+}
+
+/* Line reveal masking */
+.split-line-wrap {
+  overflow: hidden;
+  display: block;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-marquee-up-40,
+  .animate-marquee-down-55,
+  .animate-marquee-up-48 {
+    animation: none !important;
+  }
+}
