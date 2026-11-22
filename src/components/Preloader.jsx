@@ -6,10 +6,11 @@ export default function Preloader({ progress, isLoaded, onComplete }) {
 
   useEffect(() => {
     if (isLoaded && containerRef.current) {
+      containerRef.current.style.pointerEvents = 'none'
       gsap.to(containerRef.current, {
         opacity: 0,
-        duration: 0.6,
-        ease: 'power3.inOut',
+        duration: 0.4,
+        ease: 'power2.out',
         onComplete: () => {
           if (containerRef.current) {
             containerRef.current.style.display = 'none'

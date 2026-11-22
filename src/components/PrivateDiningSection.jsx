@@ -154,7 +154,7 @@ export default function PrivateDiningSection() {
             <img
               ref={cardImageRef}
               alt="L'Ambroisie Salon Privé"
-              src="/images/screen1_full.png"
+              src="/images/screen1_full.webp"
               loading="lazy"
               decoding="async"
               className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-80"

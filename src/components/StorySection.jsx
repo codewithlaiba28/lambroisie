@@ -119,8 +119,10 @@ export default function StorySection() {
         <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
           <img
             ref={bgImageRef}
-            src="/images/screen3_chef_kitchen.png"
+            src="/images/screen3_chef_kitchen.webp"
             alt="Chef plating in ambient kitchen pass"
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover will-change-transform"
           />
           {/* Moody Overlay Gradients */}

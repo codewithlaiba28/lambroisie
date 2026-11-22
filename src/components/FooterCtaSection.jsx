@@ -91,7 +91,7 @@ export default function FooterCtaSection() {
         <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
           <img
             ref={bgImageRef}
-            src="/images/screen4_night_window.png"
+            src="/images/screen4_night_window.webp"
             alt="Moody nighttime Parisian restaurant view"
             loading="lazy"
             decoding="async"

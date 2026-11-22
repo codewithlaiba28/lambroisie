@@ -15,7 +15,7 @@ const col1Cards = [
   },
   {
     type: 'photo',
-    image: '/images/screen2_plated_dish.png',
+    image: '/images/screen2_plated_dish.webp',
     tag: 'Signature Plat',
     title: 'Canard de Challans aux Mûres'
   },
@@ -43,7 +43,7 @@ const col2Cards = [
   },
   {
     type: 'photo',
-    image: '/images/screen1_full.png',
+    image: '/images/screen1_full.webp',
     tag: 'Atmosphere',
     title: 'Twilight Candlelit Grandeur'
   },
@@ -65,7 +65,7 @@ const col2Cards = [
 const col3Cards = [
   {
     type: 'photo',
-    image: '/images/screen3_chef_kitchen.png',
+    image: '/images/screen3_chef_kitchen.webp',
     tag: 'Haute Maîtrise',
     title: 'Chef Bernard Pacaud at Pass'
   },
@@ -83,7 +83,7 @@ const col3Cards = [
   },
   {
     type: 'photo',
-    image: '/images/menu_cheese.jpg',
+    image: '/images/menu_cheese.webp',
     tag: 'Terroir d’Exception',
     title: 'Affinage 24 Mois Chariot'
   }

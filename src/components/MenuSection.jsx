@@ -13,7 +13,7 @@ const menuData = {
       title: 'Prélude Gourmand',
       price: '€65',
       description: 'Velouté soyeux de cèpes d’automne à la truffe noire d’hiver, gougères tièdes au Comté 24 mois.',
-      image: '/images/menu_entree.jpg',
+      image: '/images/menu_entree.webp',
       alt: 'Velouté de cèpes à la truffe et gougères chaudes au Comté',
       caption: {
         eyebrow: 'Prélude de Saison',
@@ -26,7 +26,7 @@ const menuData = {
       title: 'Plat Signature Rapide',
       price: '€95',
       description: 'Canard de Challans rôti aux mûres sauvages, mousseline de panais truffée et réduction au cassis.',
-      image: '/images/screen2_plated_dish.png',
+      image: '/images/screen2_plated_dish.webp',
       alt: 'Canard de Challans aux mûres sauvages et mousseline',
       caption: {
         eyebrow: 'Plat Signature',
@@ -39,7 +39,7 @@ const menuData = {
       title: 'Finale en Douceur',
       price: '€35',
       description: 'Tartelette chaude au chocolat Valrhona grand cru, crème glacée à la fève tonka et café d’Éthiopie.',
-      image: '/images/menu_dessert.jpg',
+      image: '/images/menu_dessert.webp',
       alt: 'Tartelette au chocolat Valrhona et mignardises de haute chocolaterie',
       caption: {
         eyebrow: 'Douceur Minute',
@@ -54,7 +54,7 @@ const menuData = {
       title: 'Les Entrées du Midi',
       price: '€75',
       description: 'Velouté délicat de champignons des sous-bois, lamelles de truffe noire et brioche feuilletée dorée.',
-      image: '/images/menu_entree.jpg',
+      image: '/images/menu_entree.webp',
       alt: 'Velouté soyeux de champignons des bois et truffe noire',
       caption: {
         eyebrow: 'Entrée Fraîcheur',
@@ -67,7 +67,7 @@ const menuData = {
       title: 'Les Plats de Saison',
       price: '€115',
       description: 'Filet de turbot sauvage rôti au beurre noisette, mousseline d’artichauts et émulsion au Vin Jaune.',
-      image: '/images/screen2_plated_dish.png',
+      image: '/images/screen2_plated_dish.webp',
       alt: 'Filet de turbot sauvage rôti au beurre noisette',
       caption: {
         eyebrow: 'Plat de Saison',
@@ -80,7 +80,7 @@ const menuData = {
       title: 'Douceurs Légères',
       price: '€40',
       description: 'Soufflé minute au Grand Marnier et fruits confits d’Apt, sorbet rafraîchissant aux agrumes de Menton.',
-      image: '/images/menu_dessert.jpg',
+      image: '/images/menu_dessert.webp',
       alt: 'Soufflé minute au Grand Marnier et sorbet agrumes',
       caption: {
         eyebrow: 'Dessert du Chef',
@@ -95,7 +95,7 @@ const menuData = {
       title: 'Les Entrées',
       price: '€95',
       description: 'Wild mushroom velouté, foie gras poêlé, black winter truffle shaving, pain brioché toasté.',
-      image: '/images/menu_entree.jpg',
+      image: '/images/menu_entree.webp',
       alt: 'Velouté de cèpes, foie gras poêlé et lamelles de truffe noire d’hiver',
       caption: {
         eyebrow: 'Signature Entrée',
@@ -108,7 +108,7 @@ const menuData = {
       title: 'Les Plats de Résistance',
       price: '€160',
       description: 'Duck magret with wild blackberry gastrique, aged Wagyu ribeye en croûte de moelle, roasted Atlantic turbot bathed in Vin Jaune butter.',
-      image: '/images/screen2_plated_dish.png',
+      image: '/images/screen2_plated_dish.webp',
       alt: 'Canard de Challans aux mûres sauvages et mousseline délicate',
       caption: {
         eyebrow: 'Signature Plat',
@@ -121,7 +121,7 @@ const menuData = {
       title: 'Les Fromages Affinés',
       price: '€45',
       description: 'Selection of artisan French cheeses from master affineurs, walnut honeycomb, toasted levain bread.',
-      image: '/images/menu_cheese.jpg',
+      image: '/images/menu_cheese.webp',
       alt: 'Plateau de fromages affinés artisanaux français avec Comté 24 mois, Brie de Meaux, Roquefort et miel aux noix',
       caption: {
         eyebrow: 'Sélection d’Exception',
@@ -134,7 +134,7 @@ const menuData = {
       title: 'Les Desserts & Nectars',
       price: '€50',
       description: 'Grand Marnier soufflé minute, dark Valrhona chocolate tartlet, rare vineyard honey nectar pairings.',
-      image: '/images/menu_dessert.jpg',
+      image: '/images/menu_dessert.webp',
       alt: 'Soufflé minute au Grand Marnier et tartelette au chocolat grand cru',
       caption: {
         eyebrow: 'Douceurs Impériales',

@@ -21,11 +21,23 @@ export default function App() {
   const [preloaderGone, setPreloaderGone] = useState(false)
   const lenisRef = useRef(null)
 
+  // Global safety fallback: Unconditional unlock within 1.4s
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true)
+      setLoadProgress(100)
+    }, 1400)
+    return () => clearTimeout(timer)
+  }, [])
+
   // Initialize Lenis smooth scroll and sync with ScrollTrigger
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     if (prefersReducedMotion) {
+      document.body.style.overflow = ''
+      setIsLoaded(true)
+      setPreloaderGone(true)
       return
     }
 

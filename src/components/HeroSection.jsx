@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useMagnetic } from '../hooks/useMagnetic'
@@ -15,66 +15,54 @@ export default function HeroSection({ onProgressUpdate, onLoaded }) {
   const reserveBtnRef = useMagnetic(0.25)
   const menuBtnRef = useMagnetic(0.25)
 
-  const [allLoaded, setAllLoaded] = useState(false)
   const imagesRef = useRef([])
-  const frameCountRef = useRef(192)
+  const frameCountRef = useRef(72)
+  const currentRenderedFrameRef = useRef(0)
 
-  // 1. Preload all frames in memory with true progress
   useEffect(() => {
     const isMobile = window.innerWidth < 768
-    const frameCount = isMobile ? 64 : 192
+    const frameCount = isMobile ? 36 : 72
     frameCountRef.current = frameCount
     const frameFolder = isMobile ? '/frames-mobile' : '/frames'
 
     const images = new Array(frameCount)
     imagesRef.current = images
 
-    let loadedCount = 0
+    const canvas = canvasRef.current
+    const container = containerRef.current
+    if (!canvas || !container) return
 
-    for (let i = 0; i < frameCount; i++) {
-      const img = new Image()
-      const paddedIndex = String(i + 1).padStart(4, '0')
-      img.src = `${frameFolder}/frame_${paddedIndex}.jpg`
+    const ctx = canvas.getContext('2d', { alpha: false })
 
-      const handleDone = () => {
-        loadedCount++
-        const pct = Math.min(100, Math.round((loadedCount / frameCount) * 100))
-        if (onProgressUpdate) onProgressUpdate(pct)
+    // Device performance & reduced motion detection
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const isLowPower = Boolean(
+      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+      (navigator.deviceMemory && navigator.deviceMemory <= 4)
+    )
 
-        if (loadedCount === frameCount) {
-          setAllLoaded(true)
-          if (onLoaded) onLoaded()
+    // Nearest-frame lookup so canvas never flickers or renders blank
+    const getClosestLoadedImage = (index) => {
+      const safe = Math.min(frameCount - 1, Math.max(0, index))
+      if (images[safe] && images[safe].complete && images[safe].naturalWidth > 0) {
+        return images[safe]
+      }
+      for (let offset = 1; offset < frameCount; offset++) {
+        const prev = safe - offset
+        if (prev >= 0 && images[prev]?.complete && images[prev]?.naturalWidth > 0) {
+          return images[prev]
+        }
+        const next = safe + offset
+        if (next < frameCount && images[next]?.complete && images[next]?.naturalWidth > 0) {
+          return images[next]
         }
       }
-
-      img.onload = () => {
-        images[i] = img
-        handleDone()
-      }
-      img.onerror = () => {
-        images[i] = img
-        handleDone()
-      }
+      return null
     }
-  }, [onProgressUpdate, onLoaded])
 
-  // 2. Setup Canvas Rendering & Scroll-Scrubbed Animation
-  useEffect(() => {
-    if (!allLoaded || !canvasRef.current || !containerRef.current) return
-
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d', { alpha: false })
-    const container = containerRef.current
-    const images = imagesRef.current
-    const frameCount = frameCountRef.current
-
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-    // Draw frame with crisp aspect-ratio cover fit
     const renderFrame = (index) => {
-      const safeIndex = Math.min(frameCount - 1, Math.max(0, index))
-      const img = images[safeIndex]
-      if (!img || !img.complete || img.naturalWidth === 0) return
+      const img = getClosestLoadedImage(index)
+      if (!img) return
 
       const cw = canvas.width
       const ch = canvas.height
@@ -90,31 +78,113 @@ export default function HeroSection({ onProgressUpdate, onLoaded }) {
 
       ctx.clearRect(0, 0, cw, ch)
       ctx.drawImage(img, 0, 0, iw, ih, cx, cy, nw, nh)
+      currentRenderedFrameRef.current = index
     }
 
     const resizeCanvas = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
       canvas.width = window.innerWidth * dpr
       canvas.height = window.innerHeight * dpr
-      renderFrame(0)
+      renderFrame(currentRenderedFrameRef.current)
     }
 
     resizeCanvas()
     window.addEventListener('resize', resizeCanvas)
-    renderFrame(0)
 
-    if (prefersReducedMotion) {
-      renderFrame(frameCount - 1)
-      gsap.set(headlineRef.current, { opacity: 0, display: 'none' })
-      gsap.set(riservatoRef.current, { opacity: 1, filter: 'blur(0px)' })
+    // Step 1: Preload frame 0 immediately (< 35KB) and render instantly
+    const firstImg = new Image()
+    firstImg.src = `${frameFolder}/frame_0001.webp`
+    firstImg.onload = () => {
+      images[0] = firstImg
+      renderFrame(0)
+      if (onProgressUpdate) onProgressUpdate(40)
+    }
+
+    // Step 2: Load keyframes spaced across the sequence (only 8-12 frames total ~300KB)
+    const keyframeStep = Math.max(2, Math.floor(frameCount / 10))
+    const keyframeIndices = []
+    for (let i = 0; i < frameCount; i += keyframeStep) {
+      if (i !== 0) keyframeIndices.push(i)
+    }
+    if (!keyframeIndices.includes(frameCount - 1)) {
+      keyframeIndices.push(frameCount - 1)
+    }
+
+    let loadedKeyframes = 0
+    const totalKeyframes = keyframeIndices.length
+    let isKeyframesComplete = false
+
+    const loadRemainingFrames = () => {
+      const remainingQueue = []
+      for (let i = 0; i < frameCount; i++) {
+        if (!images[i]) remainingQueue.push(i)
+      }
+
+      let activeRequests = 0
+      const maxConcurrent = 3
+
+      const next = () => {
+        while (activeRequests < maxConcurrent && remainingQueue.length > 0) {
+          const idx = remainingQueue.shift()
+          activeRequests++
+          const img = new Image()
+          const paddedIndex = String(idx + 1).padStart(4, '0')
+          img.src = `${frameFolder}/frame_${paddedIndex}.webp`
+          img.onload = img.onerror = () => {
+            images[idx] = img
+            activeRequests--
+            next()
+          }
+        }
+      }
+      next()
+    }
+
+    keyframeIndices.forEach((idx) => {
+      const img = new Image()
+      const paddedIndex = String(idx + 1).padStart(4, '0')
+      img.src = `${frameFolder}/frame_${paddedIndex}.webp`
+      const onDone = () => {
+        images[idx] = img
+        loadedKeyframes++
+        const pct = 40 + Math.round((loadedKeyframes / totalKeyframes) * 60)
+        if (onProgressUpdate) onProgressUpdate(pct)
+
+        if (loadedKeyframes === totalKeyframes && !isKeyframesComplete) {
+          isKeyframesComplete = true
+          if (onLoaded) onLoaded()
+          loadRemainingFrames()
+        }
+      }
+      img.onload = onDone
+      img.onerror = onDone
+    })
+
+    // Safety timeout: Never let the loader hang more than 1.2s on any laptop or connection
+    const safetyTimer = setTimeout(() => {
+      if (!isKeyframesComplete) {
+        isKeyframesComplete = true
+        if (onProgressUpdate) onProgressUpdate(100)
+        if (onLoaded) onLoaded()
+        loadRemainingFrames()
+      }
+    }, 1200)
+
+    // Reduced motion or low-power fallback:
+    if (prefersReducedMotion || (isLowPower && isMobile)) {
+      renderFrame(0)
+      gsap.set(headlineRef.current, { opacity: 1, y: 0 })
+      gsap.set(riservatoRef.current, { opacity: 0, display: 'none' })
       gsap.set(ctaButtonsRef.current, { opacity: 1, y: 0 })
-      return () => window.removeEventListener('resize', resizeCanvas)
+      return () => {
+        clearTimeout(safetyTimer)
+        window.removeEventListener('resize', resizeCanvas)
+      }
     }
 
     const state = { frame: 0 }
 
     // Master ScrollTrigger timeline pinned for ~400vh
-    // Page stays locked on hero until the LAST frame is reached (progress = 1.0)
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: container,
@@ -126,7 +196,6 @@ export default function HeroSection({ onProgressUpdate, onLoaded }) {
         anticipatePin: 1,
         refreshPriority: 10,
         onUpdate: (self) => {
-          // Direct scrub calculation: progress * (totalFrames - 1)
           const targetFrame = Math.min(
             frameCount - 1,
             Math.max(0, Math.floor(self.progress * (frameCount - 1)))
@@ -142,7 +211,6 @@ export default function HeroSection({ onProgressUpdate, onLoaded }) {
       }
     })
 
-    // Timeline driving frame 0 -> frameCount - 1
     tl.to(state, {
       frame: frameCount - 1,
       ease: 'none',
@@ -179,10 +247,11 @@ export default function HeroSection({ onProgressUpdate, onLoaded }) {
     )
 
     return () => {
+      clearTimeout(safetyTimer)
       window.removeEventListener('resize', resizeCanvas)
       tl.kill()
     }
-  }, [allLoaded])
+  }, [onProgressUpdate, onLoaded])
 
   return (
     <section
